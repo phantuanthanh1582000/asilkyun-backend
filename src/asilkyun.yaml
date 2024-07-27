@@ -1,0 +1,1432 @@
+openapi: 3.0.0
+info:
+  title: Express API with Swagger
+  description: A simple CRUD API application documented with Swagger
+  contact:
+    email: tphan10932@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+tags:
+  - name: User
+    description: Everything about user
+  - name: Post
+    description: Everything about post
+  - name: Category
+    description: Everything about category
+  - name: Product
+    description: Everything about product
+  - name: Warehouse
+    description: Everything about warehouse
+  - name: Cart
+    description: Everything about cart
+  - name: Order
+    description: Everything about order
+paths:
+  /register:
+    post:
+      tags:
+        - User
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request
+        '409':
+          description: Conflict - Email or IdAccount already exists
+        '500':
+          description: Internal server error
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: Log in an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized - Invalid credentials
+        '500':
+          description: Internal server error
+
+  /createCategory:
+    post:
+      tags:
+        - Category
+      summary: Create a new category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: Bad request
+        '403':
+          description: Forbidden - User does not have the required role
+        '500':
+          description: Internal server error
+
+  /editCategory/{categoryId}:
+    put:
+      tags:
+        - Category
+      summary: Edit a category
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the category to edit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Category not found
+        '500':
+          description: Internal server error
+
+  /deleteCategory/{categoryId}:
+    delete:
+      tags:
+        - Category
+      summary: Delete a category
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the category to delete
+      responses:
+        '200':
+          description: Category deleted successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Category not found
+        '500':
+          description: Internal server error
+
+  /createProduct:
+    post:
+      tags:
+        - Product
+      summary: Create a new product
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad request
+        '403':
+          description: Forbidden - User does not have the required role
+        '500':
+          description: Internal server error
+
+  /editProduct/{productId}:
+    put:
+      tags:
+        - Product
+      summary: Edit a product
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the product to edit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Product not found
+        '500':
+          description: Internal server error
+
+  /allProducts:
+    get:
+      tags:
+        - Product
+      summary: Get all products with pagination and filters
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of products per page
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: ID of the category to filter by
+        - name: productName
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Name of the product to filter by
+        - name: minPrice
+          in: query
+          required: false
+          schema:
+            type: number
+          description: Minimum price of the product
+        - name: maxPrice
+          in: query
+          required: false
+          schema:
+            type: number
+          description: Maximum price of the product
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Start date for filtering by datePosted
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: End date for filtering by datePosted
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  totalCount:
+                    type: integer
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductResponse'
+        '500':
+          description: Internal server error
+  /createWarehouse/{productId}:
+    post:
+      summary: Tạo warehouse mới cho sản phẩm
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID của sản phẩm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ProductId
+                - size
+                - amount
+              properties:
+                ProductId:
+                  type: string
+                  example: "66a2430fd1b0b9ed38b0158a"
+                size:
+                  type: string
+                  example: "S"
+                amount:
+                  type: number
+                  example: 10
+      responses:
+        '201':
+          description: Tạo warehouse thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Size added successfully
+                  newSize:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                        example: "66a2430fd1b0b9ed38b0158a"
+                      size:
+                        type: string
+                        example: "S"
+                      amount:
+                        type: number
+                        example: 10
+                      _id:
+                        type: string
+                        example: "66a24ef56278982031ba2ad8"
+                      __v:
+                        type: number
+                        example: 0
+        '400':
+          description: Thiếu các trường bắt buộc
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Missing required fields
+        '404':
+          description: Không tìm thấy sản phẩm
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Product not found
+        '409':
+          description: Size của sản phẩm đã tồn tại
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Size of product already exists
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Internal Server Error
+  /editWarehouse/{warehouseId}:
+    put:
+      summary: Chỉnh sửa warehouse
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: warehouseId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID của warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  example: 20
+      responses:
+        '200':
+          description: Chỉnh sửa warehouse thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Warehouse entry updated successfully
+                  updatedWarehouse:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "66a25022028daf7fbc115e5d"
+                      productId:
+                        type: string
+                        example: "66a2430fd1b0b9ed38b0158a"
+                      size:
+                        type: string
+                        example: "XS"
+                      amount:
+                        type: number
+                        example: 20
+                      __v:
+                        type: number
+                        example: 0
+        '400':
+          description: Thiếu các trường bắt buộc
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Missing required fields
+        '404':
+          description: Không tìm thấy warehouse
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Warehouse entry not found
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Internal Server Error
+  /allSizeOfProduct/{productId}:
+    get:
+      summary: Retrieve all warehouse sizes for a given product with pagination
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: ID of the product for which warehouse sizes are to be retrieved
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: Successful response with warehouse sizes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sizes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warehouse'
+                  page:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  totalSizes:
+                    type: integer
+        '400':
+          description: Bad request due to missing product ID
+        '500':
+          description: Internal server error
+  /editUser:
+    put:
+      tags:
+        - User
+      summary: Edit a user
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /allUsers:
+    get:
+      tags:
+        - User
+      summary: Get all users with pagination
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of users per page
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        fullName:
+                          type: string
+                        IdAccount:
+                          type: string
+                        email:
+                          type: string
+                        role:
+                          type: integer
+                        ward:
+                          type: string
+                        district:
+                          type: string
+                        address:
+                          type: string
+                        province:
+                          type: string
+                        phoneNumber:
+                          type: string
+                  totalUsers:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '500':
+          description: Internal server error
+  /addToCart:
+    post:
+      tags:
+        - Cart
+      summary: Add a product to the cart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - size
+                - amount
+              properties:
+                productId:
+                  type: string
+                  example: "66a2430fd1b0b9ed38b0158a"
+                size:
+                  type: string
+                  example: "S"
+                amount:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Product added to cart or quantity updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sản phẩm đã được thêm vào giỏ hàng hoặc số lượng đã được cập nhật"
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+  /allProductInCart:
+    get:
+      summary: Lấy tất cả sản phẩm trong giỏ hàng của người dùng (có phân trang)
+      description: Lấy tất cả sản phẩm trong giỏ hàng của người dùng với thông tin phân trang.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Trang hiện tại (mặc định là 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Số lượng sản phẩm trên mỗi trang (mặc định là 10)
+      responses:
+        '200':
+          description: Lấy danh sách sản phẩm trong giỏ hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lấy danh sách sản phẩm trong giỏ hàng thành công
+                  cartItems:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: 66a3257acb6850f55e590212
+                        IdAccount:
+                          type: string
+                          example: 669b62933a260c0e82d6f79d
+                        productId:
+                          type: string
+                          example: 6699fa8edab7c3645349be69
+                        productName:
+                          type: string
+                          example: MAP SHIRT
+                        size:
+                          type: string
+                          example: XS
+                        amount:
+                          type: integer
+                          example: 3
+                        total:
+                          type: number
+                          format: float
+                          example: 1650000
+                  pagination:
+                    type: object
+                    properties:
+                      totalItems:
+                        type: integer
+                        example: 2
+                      totalPages:
+                        type: integer
+                        example: 1
+                      currentPage:
+                        type: integer
+                        example: 1
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+        '400':
+          description: Request không hợp lệ
+        '401':
+          description: Không được phép
+        '404':
+          description: Người dùng không tồn tại
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /editCart:
+    put:
+      summary: Chỉnh sửa giỏ hàng của người dùng
+      description: Cập nhật số lượng sản phẩm trong giỏ hàng của người dùng.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartId:
+                  type: string
+                  example: '66a3257acb6850f55e590212'
+                  description: ID của sản phẩm trong giỏ hàng
+                amount:
+                  type: integer
+                  example: 2
+                  description: Số lượng sản phẩm mới
+              required:
+                - cartId
+                - amount
+      responses:
+        '200':
+          description: Cập nhật giỏ hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật giỏ hàng thành công
+                  product:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 66a3257acb6850f55e590212
+                      IdAccount:
+                        type: string
+                        example: 669b62933a260c0e82d6f79d
+                      productId:
+                        type: string
+                        example: 6699fa8edab7c3645349be69
+                      productName:
+                        type: string
+                        example: MAP SHIRT
+                      size:
+                        type: string
+                        example: XS
+                      amount:
+                        type: integer
+                        example: 2
+                      total:
+                        type: number
+                        format: float
+                        example: 1100000
+        '400':
+          description: Tất cả các trường là bắt buộc hoặc Số lượng phải là một số dương hoặc Số lượng đã vượt quá số lượng trong kho
+        '404':
+          description: Sản phẩm này không có trong giỏ hàng hoặc Sản phẩm không tồn tại trong kho
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /deleteCart:
+    delete:
+      summary: Xóa sản phẩm khỏi giỏ hàng của người dùng
+      description: Xóa sản phẩm khỏi giỏ hàng của người dùng dựa trên cartId.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartId:
+                  type: string
+                  example: '66a3257acb6850f55e590212'
+              required:
+                - cartId
+      responses:
+        '200':
+          description: Sản phẩm đã được xóa khỏi giỏ hàng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Sản phẩm đã được xóa khỏi giỏ hàng
+                  product:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: '66a3257acb6850f55e590212'
+                      IdAccount:
+                        type: string
+                        example: '669b62933a260c0e82d6f79d'
+                      productId:
+                        type: string
+                        example: '6699fa8edab7c3645349be69'
+                      productName:
+                        type: string
+                        example: 'MAP SHIRT'
+                      size:
+                        type: string
+                        example: 'XS'
+                      amount:
+                        type: integer
+                        example: 3
+                      total:
+                        type: number
+                        format: float
+                        example: 1650000
+                      __v:
+                        type: integer
+                        example: 0
+        '400':
+          description: Request không hợp lệ
+        '401':
+          description: Không được phép
+        '404':
+          description: Sản phẩm này không có trong giỏ hàng
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /createOrder:
+    post:
+      summary: Tạo đơn hàng mới
+      description: Tạo đơn hàng mới dựa trên thông tin giỏ hàng và phương thức thanh toán.
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartId:
+                  type: string
+                  example: '["66a34ff6fdd45e28e7f25184"]'
+                paymentMethod:
+                  type: string
+                  example: "COD"
+                fullName:
+                  type: string
+                  example: "Nguyễn Ái Trân"
+                email:
+                  type: string
+                  example: "tphan10919@gmail.com"
+                ward:
+                  type: string
+                  example: "1"
+                district:
+                  type: string
+                  example: "6"
+                address:
+                  type: string
+                  example: "189/54 Gia Phú"
+                province:
+                  type: string
+                  example: "Hồ Chí Minh"
+                phoneNumber:
+                  type: string
+                  example: "0913115529"
+              required:
+                - cartId
+                - paymentMethod
+      responses:
+        '201':
+          description: Đơn hàng đã được tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Đơn hàng đã được tạo thành công"
+                  order:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "669b62933a260c0e82d6f79d"
+                      fullName:
+                        type: string
+                        example: "Nguyễn Ái Trân"
+                      email:
+                        type: string
+                        example: "tphan10919@gmail.com"
+                      ward:
+                        type: string
+                        example: "1"
+                      district:
+                        type: string
+                        example: "6"
+                      address:
+                        type: string
+                        example: "189/54 Gia Phú"
+                      province:
+                        type: string
+                        example: "Hồ Chí Minh"
+                      phoneNumber:
+                        type: string
+                        example: "0913115529"
+                      totalAmount:
+                        type: integer
+                        example: 3
+                      totalPrice:
+                        type: number
+                        format: float
+                        example: 1650000
+                      paymentMethod:
+                        type: string
+                        example: "COD"
+                      orderDate:
+                        type: string
+                        format: date-time
+                        example: "2024-07-26T06:54:33.843Z"
+                      status:
+                        type: integer
+                        example: 1
+                      _id:
+                        type: string
+                        example: "66a348290d192d0aaae30455"
+                      __v:
+                        type: integer
+                        example: 0
+        '400':
+          description: Request không hợp lệ
+        '401':
+          description: Không được phép
+        '404':
+          description: Người dùng không tồn tại hoặc cartId không hợp lệ
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /allOrder:
+    get:
+      summary: Lấy tất cả đơn hàng của người dùng với phân trang
+      description: Trả về tất cả các đơn hàng của người dùng đã đăng nhập với hỗ trợ phân trang.
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Số trang hiện tại để phân trang
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: Số lượng đơn hàng trên mỗi trang
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Danh sách đơn hàng và thông tin phân trang
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "66a3581b11fc813be9137aab"
+                        userId:
+                          type: string
+                          example: "669b62933a260c0e82d6f79d"
+                        fullName:
+                          type: string
+                          example: "Nguyễn Ái Trân"
+                        email:
+                          type: string
+                          example: "tphan10919@gmail.com"
+                        ward:
+                          type: string
+                          example: "1"
+                        district:
+                          type: string
+                          example: "6"
+                        address:
+                          type: string
+                          example: "189/54 Gia Phú"
+                        province:
+                          type: string
+                          example: "Hồ Chí Minh"
+                        phoneNumber:
+                          type: string
+                          example: "0913115529"
+                        totalAmount:
+                          type: integer
+                          example: 6
+                        totalPrice:
+                          type: number
+                          format: float
+                          example: 3900000
+                        paymentMethod:
+                          type: string
+                          example: "COD"
+                        orderDate:
+                          type: string
+                          format: date-time
+                          example: "2024-07-26T08:02:35.092Z"
+                        status:
+                          type: integer
+                          example: 1
+                        __v:
+                          type: integer
+                          example: 0
+                  pagination:
+                    type: object
+                    properties:
+                      totalOrders:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 1
+                      currentPage:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+        '400':
+          description: Request không hợp lệ
+        '401':
+          description: Không được phép
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /deleteOrder:
+    delete:
+      summary: Xóa đơn hàng của người dùng
+      description: Xóa đơn hàng dựa trên `orderId`. Đơn hàng chỉ có thể bị xóa nếu nó chưa được xử lý.
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: "66a3581b11fc813be9137aab"
+              required:
+                - orderId
+      responses:
+        '200':
+          description: Đơn hàng và chi tiết đơn hàng đã được xóa thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Đơn hàng và chi tiết đơn hàng đã được xóa thành công"
+        '400':
+          description: Request không hợp lệ hoặc thiếu `orderId`
+        '401':
+          description: Không được phép
+        '404':
+          description: Đơn hàng không tồn tại hoặc không có quyền xóa đơn hàng này
+        '500':
+          description: Lỗi máy chủ nội bộ
+  /editOrder:
+    put:
+      summary: Chỉnh sửa trạng thái đơn hàng
+      description: Cập nhật trạng thái của đơn hàng dựa trên `orderId`. Chỉ admin mới có quyền thực hiện thao tác này.
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: "66a35cb5c38dae1427ded1fa"
+                status:
+                  type: integer
+                  example: 2
+                  description: "Trạng thái mới của đơn hàng. 1-Chờ xác nhận, 2-Đã xác nhận, 3-Đã hủy"
+              required:
+                - orderId
+                - status
+      responses:
+        '200':
+          description: Đơn hàng đã được cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Đơn hàng đã được cập nhật"
+                  order:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "66a35cb5c38dae1427ded1fa"
+                      userId:
+                        type: string
+                        example: "669b62933a260c0e82d6f79d"
+                      fullName:
+                        type: string
+                        example: "Nguyễn Ái Trân"
+                      email:
+                        type: string
+                        example: "tphan10919@gmail.com"
+                      ward:
+                        type: string
+                        example: "1"
+                      district:
+                        type: string
+                        example: "6"
+                      address:
+                        type: string
+                        example: "189/54 Gia Phú"
+                      province:
+                        type: string
+                        example: "Hồ Chí Minh"
+                      phoneNumber:
+                        type: string
+                        example: "0913115529"
+                      totalAmount:
+                        type: integer
+                        example: 3
+                      totalPrice:
+                        type: number
+                        format: float
+                        example: 2250000
+                      paymentMethod:
+                        type: string
+                        example: "COD"
+                      orderDate:
+                        type: string
+                        format: date-time
+                        example: "2024-07-26T08:22:13.941Z"
+                      status:
+                        type: integer
+                        example: 2
+                      __v:
+                        type: integer
+                        example: 0
+        '400':
+          description: Request không hợp lệ hoặc trạng thái không phù hợp
+        '401':
+          description: Không được phép
+        '404':
+          description: Đơn hàng không tồn tại hoặc trạng thái không hợp lệ cho đơn hàng này
+        '500':
+          description: Lỗi máy chủ nội bộ
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      required:
+        - fullName
+        - IdAccount
+        - password
+        - email
+        - ward
+        - district
+        - address
+        - province
+        - phoneNumber
+      properties:
+        fullName:
+          type: string
+          default: 'Phan Tuấn Thành'
+        IdAccount:
+          type: string
+          default: 'phantuanthanh'
+        password:
+          type: string
+          default: 'Thanh123456*'
+        role:
+          type: number
+          default: 1
+        email:
+          type: string
+          default: 'tphan10932@gmail.com'
+        ward:
+          type: string
+          default: '1'
+        district:
+          type: string
+          default: '6'
+        address:
+          type: string
+          default: '189/52 Gia Phú'
+        province:
+          type: string
+          default: 'Hồ Chí Minh'
+        phoneNumber:
+          type: string
+          default: '0913115527'
+    UserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          default: 'Đăng ký thành công'
+        user:
+          $ref: '#/components/schemas/User'
+    Login:
+      type: object
+      required:
+        - IdAccount
+        - password
+      properties:
+        IdAccount:
+          type: string
+          default: 'phantuanthanh'
+        password:
+          type: string
+          default: 'Thanh123456*'
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          default: 'Đăng nhập thành công'
+        token:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        user:
+          type: object
+          properties:
+            fullName:
+              type: string
+              example: 'Phan Tuấn Thành'
+            IdAccount:
+              type: string
+              example: 'phantuanthanh'
+            email:
+              type: string
+              example: 'tphan10932@gmail.com'
+            role:
+              type: number
+              example: 1
+    Category:
+      type: object
+      required:
+        - categoryName
+      properties:
+        categoryName:
+          type: string
+          default: 'Thời trang'
+    CategoryResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: '60d21b467db72d001f2e3f64'
+        categoryName:
+          type: string
+          example: 'Thời trang'
+    Product:
+      type: object
+      required:
+        - categoryId
+        - productName
+        - productPrice
+        - productImg
+        - productImgDetail
+        - productMaterial
+        - productDescription
+      properties:
+        categoryId:
+          type: string
+          example: '60d21b467db72d001f2e3f64'
+        productName:
+          type: string
+          example: 'GILLET'
+        productPrice:
+          type: number
+          example: 700000
+        productImg:
+          type: string
+          example: 'GILLET.png'
+        productImgDetail:
+          type: array
+          items:
+            type: string
+          example:
+            - 'GILLET0.png'
+            - 'GILLET1.png'
+            - 'GILLET2.png'
+        productMaterial:
+          type: string
+          example: 'Vải cotton'
+        productDescription:
+          type: string
+          example: 'productDescription'
+    ProductResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: '60d21b467db72d001f2e3f64'
+        categoryId:
+          type: string
+          example: '60d21b467db72d001f2e3f64'
+        productName:
+          type: string
+          example: 'GILLET'
+        productPrice:
+          type: number
+          example: 700000
+        productImg:
+          type: string
+          example: 'GILLET.png'
+        productImgDetail:
+          type: array
+          items:
+            type: string
+          example:
+            - 'GILLET0.png'
+            - 'GILLET1.png'
+            - 'GILLET2.png'
+        productMaterial:
+          type: string
+          example: 'Vải cotton'
+        productDescription:
+          type: string
+          example: 'productDescription'
+        datePosted:
+          type: string
+          format: date-time
+          example: '2024-07-25T12:29:42.147Z'
+        warehouse:
+          type: array
+          items:
+            type: object
+          example: []
+        __v:
+          type: integer
+          example: 0
+    Warehouse:
+      type: object
+      required:
+        - productId
+        - size
+        - amount
+      properties:
+        _id:
+          type: string
+          example: '66a24ef56278982031ba2ad8'
+        productId:
+          type: string
+          example: '66a2430fd1b0b9ed38b0158a'
+        size:
+          type: string
+          example: 'S'
+        amount:
+          type: number
+          example: 10
+        __v:
+          type: number
+          example: 0
+
+        
