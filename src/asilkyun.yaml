@@ -79,7 +79,7 @@ paths:
         - Category
       summary: Create a new category
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -106,7 +106,7 @@ paths:
         - Category
       summary: Edit a category
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: categoryId
           in: path
@@ -140,7 +140,7 @@ paths:
         - Category
       summary: Delete a category
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: categoryId
           in: path
@@ -164,7 +164,7 @@ paths:
         - Product
       summary: Create a new product
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -191,7 +191,7 @@ paths:
         - Product
       summary: Edit a product
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: productId
           in: path
@@ -225,7 +225,7 @@ paths:
         - Product
       summary: Get all products with pagination and filters
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: page
           in: query
@@ -303,7 +303,7 @@ paths:
       tags:
         - Warehouse
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: productId
           in: path
@@ -388,13 +388,14 @@ paths:
               schema:
                 type: string
                 example: Internal Server Error
+
   /editWarehouse/{warehouseId}:
     put:
       summary: Chỉnh sửa warehouse
       tags:
         - Warehouse
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: warehouseId
           in: path
@@ -464,13 +465,14 @@ paths:
               schema:
                 type: string
                 example: Internal Server Error
+
   /allSizeOfProduct/{productId}:
     get:
       summary: Retrieve all warehouse sizes for a given product with pagination
       tags:
         - Warehouse
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: productId
@@ -520,7 +522,7 @@ paths:
         - User
       summary: Edit a user
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -540,13 +542,14 @@ paths:
           description: User not found
         '500':
           description: Internal server error
+
   /allUsers:
     get:
       tags:
         - User
       summary: Get all users with pagination
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - name: page
           in: query
@@ -607,7 +610,7 @@ paths:
         - Cart
       summary: Add a product to the cart
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -645,6 +648,7 @@ paths:
           description: Not found
         '500':
           description: Internal server error
+
   /allProductInCart:
     get:
       summary: Lấy tất cả sản phẩm trong giỏ hàng của người dùng (có phân trang)
@@ -652,7 +656,7 @@ paths:
       tags:
         - Cart
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
         - in: query
           name: page
@@ -727,6 +731,7 @@ paths:
           description: Người dùng không tồn tại
         '500':
           description: Lỗi máy chủ nội bộ
+
   /editCart:
     put:
       summary: Chỉnh sửa giỏ hàng của người dùng
@@ -734,7 +739,7 @@ paths:
       tags:
         - Cart
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -795,6 +800,7 @@ paths:
           description: Sản phẩm này không có trong giỏ hàng hoặc Sản phẩm không tồn tại trong kho
         '500':
           description: Lỗi máy chủ nội bộ
+
   /deleteCart:
     delete:
       summary: Xóa sản phẩm khỏi giỏ hàng của người dùng
@@ -802,7 +808,7 @@ paths:
       tags:
         - Cart
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:

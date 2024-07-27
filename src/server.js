@@ -10,20 +10,20 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = yaml.parse(file)
 const cors = require('cors');
 
-
+var corsOptionsDelegate = function (req, callback) {
+    var corsOptions = { origin: true };
+    callback(null, corsOptions);
+  };
 
 const app = express()
 const port = 3000;
 
-app.use(cors());
+app.use(cors(corsOptionsDelegate));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use((req, res, next) => {
-//     console.log(req.body);
-//     next();
-//   });
+
 
 app.use('/api', routes)
 
